@@ -2,10 +2,11 @@ require("dotenv").config();
 import { Queue } from "bullmq";
 import prisma from "./prisma/client";
 import UserService from "./services/UserService";
+import { emit } from "process";
 
 export const birthdayQueue = new Queue("birthdayQueue", {
   connection: {
-    host: process.env.REDIS_HOST || 'localhost',
+    host: process.env.REDIS_HOST || "localhost",
     port: process.env.REDIS_PORT ? +process.env.REDIS_PORT : 6379,
     password: process.env.REDIS_PASSWORD || undefined,
   },
@@ -31,7 +32,11 @@ export async function scheduleBirthdayMessages() {
           if (delay > 0) {
             await birthdayQueue.add(
               "sendBirthdayMessage",
-              { userId: user.id },
+              {
+                userId: user.id,
+                email: user.email,
+                fullName: `${user.firstName} ${user.lastName}`,
+              },
               { delay }
             );
           }

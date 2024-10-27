@@ -1,5 +1,6 @@
 import prisma from "../prisma/client";
 import { Prisma, User } from "@prisma/client";
+import axios from "axios";
 import { subHours } from "date-fns";
 
 class UserService {
@@ -72,13 +73,23 @@ class UserService {
     });
   }
 
-  async sendBirthdayMessage(userId: number) {
-    // TODO : Panggil API pengiriman pesan ke pihak ketiga di sini
-
-    await prisma.user.update({
-      where: { id: userId },
-      data: { lastSendAt: new Date() },
-    });
+  async sendBirthdayMessage(userId: number, email: string, fullName: string) {
+    try {
+      await axios.post(
+        `https://email-service.digitalenvision.com.au`,
+        {
+          email,
+          text: `Hey, ${fullName} it's your birthday`,
+        }
+      )
+  
+      await prisma.user.update({
+        where: { id: userId },
+        data: { lastSendAt: new Date() },
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 
