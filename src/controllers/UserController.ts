@@ -4,7 +4,7 @@ import UserService from "../services/UserService";
 class UserController {
   async createUser(req: Request, res: Response): Promise<any> {
     try {
-      const { email, firstName, lastName, timeZone, birthday } = req.body;
+      const { email, firstName, lastName, timeZone, birthDate } = req.body;
       const checkEmail = await UserService.getUserOneSpecific({ email });
       if (checkEmail) {
         return res.status(409).json({ error: "Email already exists" });
@@ -15,7 +15,7 @@ class UserController {
         firstName,
         lastName,
         timeZone,
-        birthday,
+        birthDate,
       });
       res.status(201).json({ user });
     } catch (error) {
@@ -45,7 +45,7 @@ class UserController {
 
   async updateUser(req: Request, res: Response): Promise<any> {
     try {
-      const { email, firstName, lastName, timeZone, birthday } = req.body;
+      const { email, firstName, lastName, timeZone, birthDate } = req.body;
 
       const checkEmail = await UserService.getUserOneSpecific({
         email,
@@ -60,7 +60,7 @@ class UserController {
         firstName,
         lastName,
         timeZone,
-        birthday,
+        birthDate,
       });
       user
         ? res.json({ user })

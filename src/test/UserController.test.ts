@@ -28,7 +28,7 @@ describe('UserController', () => {
         firstName: 'John',
         lastName: 'Doe',
         timeZone: 'UTC',
-        birthday: '1990-01-01',
+        birthDate: '1990-01-01',
       };
 
       const mockUser = { id: 1, ...req.body };
@@ -51,7 +51,7 @@ describe('UserController', () => {
         firstName: 'John',
         lastName: 'Doe',
         timeZone: 'UTC',
-        birthday: '1990-01-01',
+        birthDate: '1990-01-01',
       };
 
       (UserService.getUserOneSpecific as jest.Mock).mockResolvedValue(req.body);
@@ -71,7 +71,7 @@ describe('UserController', () => {
         firstName: 'Error',
         lastName: 'User',
         timeZone: 'UTC',
-        birthday: '1990-01-01',
+        birthDate: '1990-01-01',
       };
 
       (UserService.getUserOneSpecific as jest.Mock).mockRejectedValue(

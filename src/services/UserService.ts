@@ -1,5 +1,6 @@
-import { prisma } from "../prisma/client";
+import prisma from "../prisma/client";
 import { Prisma, User } from "@prisma/client";
+import { subHours } from "date-fns";
 
 class UserService {
   async createUser(
@@ -29,6 +30,55 @@ class UserService {
 
   async deleteUser(id: number): Promise<User | null> {
     return prisma.user.delete({ where: { id } });
+  }
+
+  async getUsersWithBirthdayToday(timeZone: string) {
+    const now = new Date();
+    const todayMonth = now.getUTCMonth() + 1;
+    const todayDay = now.getUTCDate();
+
+    return await prisma.user.findMany({
+      where: {
+        timeZone,
+        AND: [
+          {
+            AND: [
+              {
+                birthDate: {
+                  gte: new Date(
+                    `${now.getFullYear()}-${todayMonth}-${todayDay}T00:00:00.000Z`
+                  ),
+                },
+              },
+              {
+                birthDate: {
+                  lt: new Date(
+                    `${now.getFullYear()}-${todayMonth}-${
+                      todayDay + 1
+                    }T00:00:00.000Z`
+                  ),
+                },
+              },
+            ],
+          },
+          {
+            OR: [
+              { lastSendAt: null },
+              { lastSendAt: { lt: subHours(now, 24) } },
+            ],
+          },
+        ],
+      },
+    });
+  }
+
+  async sendBirthdayMessage(userId: number) {
+    // TODO : Panggil API pengiriman pesan ke pihak ketiga di sini
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { lastSendAt: new Date() },
+    });
   }
 }
 
